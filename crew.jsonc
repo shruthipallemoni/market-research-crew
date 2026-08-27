@@ -1,0 +1,42 @@
+{
+  "name": "market_research_crew",
+  "agents": ["planner", "data_collector", "analyst", "insights_strategy"],
+
+  "tasks": [
+    {
+      "name": "planning_task",
+      "description": "Break down research on the market/topic '{topic}' into 4-6 specific, targeted research sub-questions covering: key competitors, market size and growth trends, recent funding activity, customer pain points, and risks. Output the sub-questions as a numbered list.",
+      "expected_output": "A numbered list of 4-6 specific research sub-questions. No preamble, no commentary — output only the list.",
+      "agent": "planner"
+    },
+    {
+      "name": "collection_task",
+      "description": "For each research sub-question provided, execute a web search using the Tavily search tool. Collect the raw findings including source URLs for every sub-question. Do not summarize or interpret — report what each search returned.",
+      "expected_output": "Raw search findings organized by sub-question, each finding including its source URL. No analysis or interpretation — raw data only.",
+      "agent": "data_collector",
+      "context": ["planning_task"]
+    },
+    {
+      "name": "analysis_task",
+      "description": "Using the raw research findings, filter out noise, outdated information, and marketing fluff. Organize the remaining facts into a Market Overview (size, growth, trends) and a Competitive Landscape (key players and what's true about each), preserving source attribution for every fact.",
+      "expected_output": "A structured Market Overview section and a Competitive Landscape section listing each competitor with sourced facts. No preamble.",
+      "agent": "analyst",
+      "context": ["collection_task"]
+    },
+    {
+      "name": "insights_task",
+      "description": "Using the structured Market Overview and Competitive Landscape, produce a SWOT analysis and a set of concrete strategic recommendations. Every recommendation must be explicitly justified by a specific insight or data point from the analysis.",
+      "expected_output": "A complete MarketResearchReport with market overview, competitive landscape, SWOT insights, strategic recommendations (each justified), and all source URLs.",
+      "agent": "insights_strategy",
+      "context": ["analysis_task"],
+      "output_pydantic": {"python": "models.MarketResearchReport"}
+    }
+  ],
+
+  "process": "sequential",
+  "verbose": true,
+  "memory": false,
+  "inputs": {},
+  "max_rpm": 1,
+  "stream": false
+}
